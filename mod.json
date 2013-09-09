@@ -1,4 +1,8 @@
 {
+	"description": "JavaScript QUnit testrunner for Vert.x with a port of QUnit and Sinon",
+	"homepage": "https://github.com/mohlemeyer/vertxQunitSinon",
+	"author": "Matthias Ohlemeyer <mohlemeyer@gmail.com>",
+	"licenses": "MIT, BSD",
 	"main": "jslibs/qunit/test/runTests.js",
-	"description": "x"
+	"keywords": "javascript,unit test,testrunner"
 }
