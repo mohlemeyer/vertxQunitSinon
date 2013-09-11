@@ -24,7 +24,7 @@ See the [sinon project homepage](http://sinonjs.org/)
 
 * No global pollution
 * Easy to use
-* Require minimal “integration”
+* Require minimal "integration"
 * Easy to embed seamlessly with any testing framework
 * Easily fake any interface
 * Ship with ready-to-use fakes for XMLHttpRequest, timers and more
