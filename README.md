@@ -122,20 +122,23 @@ Just a few files like the testrunner or a special sinon loader were written
 from scratch.
 
 ## Status
-The code is in a *Works for me* status.
+The code is in a *Works for me* state.
 
-Above that it was possible to port the QUnit self tests so there might be a
-little more trust in the correct functioning of this test framework on Vert.x.
-To run the tests for QUnit start this module with `vertx runmod {module_name}`.
-The `main` is set to the startup script for the testrunner. Test results will be
-printed to the console and written as JUnit output to
-`./jslibs/qunit/test/testresult/test.xml`.
+Above that it was possible to port most of the QUnit self tests so there might
+be a little more trust in the correct functioning of this test framework on
+Vert.x. To run the tests for QUnit start this module with
+`vertx runmod {module_name}`. The `main` is set to the startup script for the
+testrunner. Test results will be printed to the console and written as JUnit
+output to `./jslibs/qunit/test/testresult/test.xml`.
 
-Sadly the same can not be said of Sinon.JS (which is not Sinon's fault!). The
-Unit tests for Sinon.JS could not be easily ported  to Vert.x since they require
-some parts of the Buster.JS testing toolkit which is not (yet) available for
-Vert.x. If you like to contribute, this might be good place to start: Write some
-QUnit unit tests for Sinon.JS. 
+To my regret the unit tests for Sinon.JS could not be easily ported to Vert.x
+since (at least on node) they seem to require some parts of the Buster.JS
+testing toolkit which is not (yet) available for Vert.x. If you like to
+contribute, this might be good place to start: Write some QUnit unit tests
+for Sinon.JS. Until then: Be especially careful when using the Sinon.JS parts
+of this module. It has proven to be useful for me with spies and stubs but I
+have obviously only used a very small part of the Sinon.JS library. If you
+encounter problems: You're on your own!
 
 # Credits, Responsibility, Disclaimer
 For the most part this Vert.x module contains work of the authors/contributors
