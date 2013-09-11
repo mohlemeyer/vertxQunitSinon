@@ -31,7 +31,7 @@ var moduleContext = this;
  * directories.
  * @param {boolean} [silent=false] Flag to suppress console output.
  * @param {function} callback Function to call after running all tests. The
- * function receives a JUnit compatible XML string as it's single argument.
+ * function receives a JUnit compatible XML string as its single argument.
  */
 module.exports = function (options, callback) {
 	var startDir;			// Start directory from which to recurse
