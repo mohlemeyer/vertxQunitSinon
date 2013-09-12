@@ -1,20 +1,25 @@
 # Vert.x JavaScript Testrunner
-## built on QUnit and  Sinon.JS
+## Built on QUnit and  Sinon.JS
 This module contains ports of the [QUnit](http://qunitjs.com) and
 [Sinon.JS] (http://sinonjs.org) JavaScript testing frameworks for the Vert.x
 platform, supplemented by an easy to use testrunner.
 
 # Getting Started
-The module has not (yet) been submitted to the Vert.x module registry, but
-should be easy enough to use anyway.
-* Simply clone the code or download a zip and install in a separate directory
-parallel to your locally installed modules.
-* Then set up the test module which will hold your test scripts and
+## Installation
+Simply run the module with `vertx runmod mohlemeyer~vertxQunitSinon-{version}`
+(see the Vert.x [module registry](http://modulereg.vertx.io) for the latest
+available release). This will install the module and immediately run the unit
+tests.
+
+## Set up Your Test Module
+Create a test module which will hold your test scripts and
 [`include`](http://vertx.io/mods_manual.html#includes) the QUnit/Sinon module
-as a resource.
-* Write a short script as the [`main`](http://vertx.io/mods_manual.html#main)
-of your test module to start the testrunner. In its simplest form this might
-be a file in your top level directory with the following contents:
+`mohlemeyer~vertxQunitSinon-{version}` as a resource.
+
+In your test module write a short script as the
+[`main`](http://vertx.io/mods_manual.html#main) to start the testrunner.
+In its simplest form this might be a file in your top level directory with the
+following contents:
 
 ```javascript
 var container = require('vertx/container');
@@ -26,7 +31,7 @@ runTests(
   }
 );
 ```
-* Write your test scripts in familiar QUnit/Sinon fashion. Per default, all
+Then write your test scripts in familiar QUnit/Sinon fashion. Per default, all
 files in your test module starting with `test_` and ending with `.js` will be
 sequentially loaded and executed by the testrunner. Test results will be
 printed to the console. A simple test script might look like this:
@@ -39,7 +44,8 @@ test('should pass', function () {
   ok(fSpied.calledOnce, 'called once');
 });
 ```
-* Run your tests by calling `vertx runmod {name of your testmodule}`.
+Finally run your tests as usual  by calling
+`vertx runmod {name of your testmodule}`.
 
 # A Little More Detail
 ## Configuring the Testrunner
@@ -74,7 +80,7 @@ The default value is `^test_.+\\.js$`, which will find files starting with
 <code>test_.*</code>, because the testrunner might find files you would not
 expect, e.g. artifacts from your version control system in "hidden" directories.
 
-* `silent`: Flag to suppress console output. Default is `false`.
+* `config.silent`: Flag to suppress console output. Default is `false`.
 
 ### Callback
 The `callback` function receives the test results as a JUnit compatible XML
@@ -110,7 +116,7 @@ used in your test files without importing them by `require`. These are
 should) import other modules via `require`. Very probably the very first
 statement in your test files is a `require` for the code/library to test.
 
-# About the module
+# About the Module
 As noted in the introduction this Vert.x module represents just a thin wrapper
 for the QUnit and Sinon.JS libraries to make them compatible with the Vert.x
 runtime environment. You will find the code with the required modifications in
@@ -124,12 +130,12 @@ from scratch.
 ## Status
 The code is in a *Works for me* state.
 
-Above that it was possible to port most of the QUnit self tests so there might
+Above that it was possible to port most of the QUnit self tests, so there might
 be a little more trust in the correct functioning of this test framework on
 Vert.x. To run the tests for QUnit start this module with
-`vertx runmod {module_name}`. The `main` is set to the startup script for the
-testrunner. Test results will be printed to the console and written as JUnit
-output to `./jslibs/qunit/test/testresult/test.xml`.
+`vertx runmod mohlemeyer~vertxQunitSinon-{version}`. The `main` is set to the
+startup script for the testrunner. Test results will be printed to the console
+and written as JUnit output to `./jslibs/qunit/test/testresult/test.xml`.
 
 To my regret the unit tests for Sinon.JS could not be easily ported to Vert.x
 since (at least on node) they seem to require some parts of the Buster.JS
@@ -146,8 +152,8 @@ of the QUnit and Sinon.JS testing frameworks. For everything that works, the
 credits go to the people who make these great tools available as open source.
 
 The author of this module takes responsibility for porting the tools above to
-Vert.x and creating a context to make them easily accessible on this platform
-with the following notice:
+Vert.x and for creating a context to make them easily accessible on the Vert.x
+platform with the following notice:
 
 > **The author provides the code for this Vert.x module "as is". If you use it,
 you do so at your own risk! The author makes no warranties as to performance,
