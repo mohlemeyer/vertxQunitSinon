@@ -222,7 +222,7 @@ module.exports = function (options, callback) {
                 if (typeof details.message !== 'undefined') {
                     expectedValues.push(details.message);
                 }
-                expectedValues.push('\n' + QUnit.jsDumpParse(details.expected)
+                expectedValues.push('\n' + QUnit.jsDump.parse(details.expected)
                         + '\n\n');
             }
             if (typeof details.actual !== 'undefined') {
@@ -230,7 +230,7 @@ module.exports = function (options, callback) {
                 if (typeof details.message !== 'undefined') {
                     actualValues.push(details.message);
                 }
-                actualValues.push('\n' + QUnit.jsDumpParse(details.actual) +
+                actualValues.push('\n' + QUnit.jsDump.parse(details.actual) +
                         '\n\n');
             }
         }
