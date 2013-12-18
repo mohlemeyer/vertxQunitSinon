@@ -1,3 +1,4 @@
+require('jslibs/qunit/qunit/qunitContext')(this);
 module = QUnit.module;
 
 

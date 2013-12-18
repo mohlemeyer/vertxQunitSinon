@@ -9,9 +9,7 @@
 var vertx = require('vertx');
 var console = require('vertx/console');
 var QUnit = require('jslibs/qunit/qunit/qunit');
-var sinon = require('jslibs/sinon/lib/sinonloader');
-
-var moduleContext = this;
+var xmlMapper = require('jslibs/qunit/thirdPartyDeps/node-xml-mapping/lib/xml-mapping');
 
 /**
  * Vertx QUnit testrunner<br>
@@ -38,7 +36,7 @@ module.exports = function (options, callback) {
 	var testFilePattern;	// Regex for testfilenames
 	var silent;				// With silent = true no console output is produced
     var testFiles;          // Array of files (absolute path) to test
-    var resultE4X;          // The resulting XML
+    var resultJSON;         // The result as a JSON object for later XML output
     var noModuleStartedYet; // Indicator: True until the first module is started
     var testMessages;       // Container (array) for messages in a test
     var expectedValues;     // Container (array) for expected values
@@ -83,9 +81,11 @@ module.exports = function (options, callback) {
     //==========================================================================
     // Set QUnit callbacks for console logging and JUnit compatible output
     //==========================================================================
-
-    // E4X: Start with a new <testsuites> element
-    resultE4X = <testsuites/>;
+    
+    // Start with an empty <testsuites> tag
+    resultJSON = {
+            testsuites: {}
+    };
     
     noModuleStartedYet = true;
     
@@ -100,10 +100,13 @@ module.exports = function (options, callback) {
         consoleLog('' + details.name);
         consoleLog(hr);
 
-        // E4X: Start a new <testsuite>
-        var newTestSuiteE4X = <testsuite/>;
-        newTestSuiteE4X.@name = 'QUnit.' + details.name;
-        resultE4X.appendChild(newTestSuiteE4X);
+        // Start a new <testsuite>
+        if (!resultJSON.testsuites.testsuite) {
+            resultJSON.testsuites.testsuite = [];
+        }
+        resultJSON.testsuites.testsuite.push({
+            name: 'QUnit.' + details.name
+        });
     });
     
     /**
@@ -112,12 +115,13 @@ module.exports = function (options, callback) {
      * "passed" and "total".
      */
     QUnit.moduleDone(function (details) {
-        // E4X: Add attributes to the latest <testsuite> element
-        var allTestSuitesE4X = resultE4X.testsuite;
-        if (allTestSuitesE4X.length() > 0) {
-            var latestTsE4X = allTestSuitesE4X[allTestSuitesE4X.length() - 1];
-            latestTsE4X.@tests = details.total;
-            latestTsE4X.@failures = details.failed;
+        // Add attributes to the latest <testsuite> element        
+        var latestTestSuite;
+        if (resultJSON.testsuites.testsuite) {
+            latestTestSuite = resultJSON.testsuites.
+            testsuite[resultJSON.testsuites.testsuite.length - 1];
+            latestTestSuite.failures = details.failed;
+            latestTestSuite.tests = details.total;
         }
     });
     
@@ -128,20 +132,27 @@ module.exports = function (options, callback) {
      */
     QUnit.testStart(function (details) {
         if (noModuleStartedYet) {
-            // E4X: Start a new <testsuite>
-            var newTestSuiteE4X = <testsuite/>;
-            newTestSuiteE4X.@name = 'QUnit.Undefined_Module';
-            resultE4X.appendChild(newTestSuiteE4X);
-            
+            // Start a new <testsuite>
+            if (!resultJSON.testsuites.testsuite) {
+                resultJSON.testsuites.testsuite = [];
+            }
+            resultJSON.testsuites.testsuite.push({
+                name: 'QUnit.Undefined_Module'
+            });
+
             noModuleStartedYet = false;
         }
         
-        // E4X: Start a new <testcase>
-        var allTestSuitesE4X = resultE4X.testsuite;
-        var latestTsE4X = allTestSuitesE4X[allTestSuitesE4X.length() - 1];
-        var newTestCaseE4X = <testcase/>;
-        newTestCaseE4X.@name = details.name;
-        latestTsE4X.appendChild(newTestCaseE4X);        
+        // Start a new <testcase>
+        var latestTestSuite;
+        latestTestSuite = resultJSON.testsuites.
+        testsuite[resultJSON.testsuites.testsuite.length - 1];
+        if (!latestTestSuite.testcase) {
+            latestTestSuite.testcase = [];
+        }
+        latestTestSuite.testcase.push({
+            name: details.name
+        });
     });
     
     testMessages = [];
@@ -166,27 +177,45 @@ module.exports = function (options, callback) {
             consoleLog(' PASS - ' + details.name);
         }
         
-        // E4X: Finalize the latest <testcase>
-        var allTestCasesE4X = resultE4X..testcase;
-        var latestTestCaseE4X = allTestCasesE4X[allTestCasesE4X.length() - 1];
+        // Finalize the latest <testcase>        
+        var latestTestSuite;
+        var latestTestCase;
+        var errorOrFailure;
+        
         if (testFailed) {
-            var errorOrFailureE4X = testDied ? <error/> : <failure/>;
-            errorOrFailureE4X.@message = testMessages.join('; ');
+            latestTestSuite = resultJSON.testsuites.
+            testsuite[resultJSON.testsuites.testsuite.length - 1];
+            latestTestCase =
+                latestTestSuite.testcase[latestTestSuite.testcase.length - 1];
+            
+            errorOrFailure = {
+                    message: testMessages.join('; ')
+            };
+            
             if (expectedValues.length > 0) {
-                var expectedE4X = <expected/>;
-                expectedE4X.appendChild(expectedValues.join(''));
-                errorOrFailureE4X.appendChild(expectedE4X);
+                errorOrFailure.expected = {
+                        $t: expectedValues.join('')
+                };
             }
+            
             if (actualValues.length > 0) {
-                var actualE4X = <actual/>;
-                actualE4X.appendChild(actualValues.join(''));
-                errorOrFailureE4X.appendChild(actualE4X);
+                errorOrFailure.actual = {
+                        $t: actualValues.join('')
+                };
             }
+            
             if (testMessages.length > 0) {
-                errorOrFailureE4X.appendChild(testMessages.join('\n'));
+                errorOrFailure['$t'] = testMessages.join('\n');
             }
-            latestTestCaseE4X.appendChild(errorOrFailureE4X);
+
+            if (testDied) {
+                latestTestCase['error'] = errorOrFailure;
+            } else {
+                latestTestCase['failure'] = errorOrFailure;
+            }
         }
+        
+        // Reset test case
         testFailed = false;
         testDied = false;
         testMessages = [];
@@ -250,19 +279,10 @@ module.exports = function (options, callback) {
         consoleLog(hr);
 
         if (typeof callback === 'function') {
-            callback(resultE4X.toXMLString());
+            callback(xmlMapper.dump(resultJSON, {indent: true}));
         }
     });
     
-    // Expose QUnit methods as "global" methods.
-    // Exclude "module" because it is already defined in the vertx
-    // CommonJS environment
-    ['asyncTest', 'deepEqual', 'equal', 'expect', 'notDeepEqual',
-     'notEqual', 'notStrictEqual', 'ok', 'raises', 'start', 'stop',
-     'strictEqual', 'test', 'throws'].forEach(function(methodName) {
-         moduleContext[methodName] = QUnit[methodName];
-     });
-
     //==========================================================================
     // Initialize QUnit
     //==========================================================================
@@ -346,7 +366,7 @@ module.exports = function (options, callback) {
     testFiles = recurseDirSync(startDir, testFilePattern, maxDirRecursionDepth);
     for (i = 0; i < testFiles.length; i++) {
         consoleLog('Loading testfile: ' + testFiles[i]);
-        load(testFiles[i]);
+        require(testFiles[i]);
     }
     
     //==========================================================================

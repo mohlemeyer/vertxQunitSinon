@@ -1,0 +1,38 @@
+{
+  "name": "xml-writer",
+  "version": "1.4.1",
+  "author": "Nicolas Thouvenin <nthouvenin@gmail.com>",
+  "contributors": [
+    {
+      "name": "Anton Zem"
+    },
+    {
+      "name": "Chip Lee",
+      "url": "https://github.com/chiplee"
+    }
+  ],
+  "description": "Native and full Javascript implementation of the classic XMLWriter class",
+  "keywords": [
+    "xml",
+    "writer",
+    "XMLWriter",
+    "generator"
+  ],
+  "homepage": "http://github.com/touv/node-xml-writer",
+  "scripts": {
+    "test": "nodeunit test/"
+  },
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/touv/node-xml-writer.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "nodeunit": ">=0.7.3"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.4.0"
+  }
+}
